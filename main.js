@@ -148,14 +148,21 @@ ipcMain.on('asynchronous-message', (event, arg) => {
         console.log( arg );
         // checks if it should set a new instance of the RPC or not.
         let instanceVar = true;
-        let activity = {};
+
         // checks if any values are empty
         const checkProperties = (obj) => {
             for (var key in obj) {
-                if (obj[key] == null || obj[key] == "")
+                if (obj[key] == null || obj[key] == "") {
                     if (key != "elapsed") {
                         return `${key} is Empty. Please Add a valid input to it.`;
                     }
+                }
+                if (obj[key].length < 2) {
+                    if (key != "elapsed") {
+                        return `${key} is less than 2 characters. Please Add a more characters to it.`;
+                    }
+                }
+                    
             }
             return false;
         }
@@ -186,53 +193,29 @@ ipcMain.on('asynchronous-message', (event, arg) => {
             return;
         }
 
-        // checks if it should have elapsed time or not
-        if (!elapsed) {
-            activity={
-                state: stateVar,
-                details: detailsVar,
-                assets:{
-                    large_image: largeIdtVar,
-                    large_text: largeTxtVar,
-                    small_image: smallIdtVar,
-                    small_text: smallTxtVar,
-                },
-                buttons:[
-                    {
-                        "label": btnTxt1VarLol,
-                        "url": btnUrl1Var
-                        },
-                    {
-                        "label": btnTxt2VarLol,
-                        "url": btnUrl2Var
-                    }
-                ],
-                    timestamps: {start: date},
-                    instance: instanceVar
-            };
-        } else {
-            activity={
-                state: stateVar,
-                details: detailsVar,
-                assets:{
-                    large_image: largeIdtVar,
-                    large_text: largeTxtVar,
-                    small_image: smallIdtVar,
-                    small_text: smallTxtVar,
-                },
-                buttons:[
-                    {
-                        "label": btnTxt1VarLol,
-                        "url": btnUrl1Var
-                        },
-                    {
-                        "label": btnTxt2VarLol,
-                        "url": btnUrl2Var
-                    }
-                ],
-                    instance: instanceVar
-            };
-        }
+
+        const activity = {
+            state: stateVar,
+            details: detailsVar,
+            assets:{
+                large_image: largeIdtVar,
+                large_text: largeTxtVar,
+                small_image: smallIdtVar,
+                small_text: smallTxtVar,
+            },
+            buttons:[
+                {
+                    "label": btnTxt1VarLol,
+                    "url": btnUrl1Var
+                    },
+                {
+                    "label": btnTxt2VarLol,
+                    "url": btnUrl2Var
+                }
+            ],
+            instance: instanceVar
+        };
+        elapsed ? Object.assign(activity, { timestamps: {start: date} },) : null;
                     
         // sets the rich presence based on the "activity" object
         client.on("ready", (person) => {
